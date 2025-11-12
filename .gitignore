@@ -3,3 +3,15 @@ ddpm_env/
 .vscode/
 *.egg-info/
 .DS_Store
+logs_debug
+cifar_test
+cifar_train
+generated_images0
+generated_images
+generated_mps
+generated_mps0
+logs_mps
+wandb
+ddpm/__pycache__/*
+ddpm/__pycache__/diffusion.cpython-310.pyc
+ddpm/__pycache__/diffusion.cpython-310.pyc

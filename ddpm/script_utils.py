@@ -10,6 +10,10 @@ from .diffusion import (
 )
 
 
+class RescaleChannels(object):
+    def __call__(self, sample):
+        return 2 * sample - 1
+
 def cycle(dl):
     """
     https://github.com/lucidrains/denoising-diffusion-pytorch/
@@ -19,10 +23,6 @@ def cycle(dl):
             yield data
 
 def get_transform():
-    class RescaleChannels(object):
-        def __call__(self, sample):
-            return 2 * sample - 1
-
     return torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
         RescaleChannels(),

@@ -32,13 +32,26 @@ def main():
 
 
 def create_argparser():
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-    defaults = dict(num_images=10000, device=device)
+    # device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    device = torch.device("mps") if torch.backends.mps.is_available() else torch.device("cpu")
+    defaults = dict(
+        num_images=10000,
+        device=device,
+        # --- 关键：补上训练时用的默认值 ---
+        # schedule_low=1e-4,
+        # schedule_high=0.02,
+        # ---------------------------------
+    )
     defaults.update(script_utils.diffusion_defaults())
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str)
     parser.add_argument("--save_dir", type=str)
+
+    # 👇 关键：手动添加 schedule_low / schedule_high
+    parser.add_argument("--schedule_low", type=float, default=1e-4)
+    parser.add_argument("--schedule_high", type=float, default=0.02)
+
     script_utils.add_dict_to_argparser(parser, defaults)
     return parser
 

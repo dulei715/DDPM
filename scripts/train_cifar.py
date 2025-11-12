@@ -54,18 +54,31 @@ def main():
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
-            num_workers=2,
+            # num_workers=2,
+            num_workers=0,
         ))
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, drop_last=True, num_workers=2)
-        
+        print(f"[DEBUG] train_loader created with num_workers=0")  # 👈 加这行
+        # test_loader = DataLoader(test_dataset, batch_size=batch_size, drop_last=True, num_workers=2)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, drop_last=True, num_workers=0)
+        print(f"[DEBUG] test_loader created with num_workers=0")  # 👈 再加这行
+
         acc_train_loss = 0
 
         for iteration in range(1, args.iterations + 1):
+            print(f"[INFO] Starting iteration {iteration}")  # 👈 加这行
+
+            # ===== 新增调试打印 =====
+            # print("[DEBUG] Before diffusion.train()")
             diffusion.train()
 
+            # print("[DEBUG] Before next(train_loader)")
             x, y = next(train_loader)
+
+            # print(f"[DEBUG] Got batch: x.shape={x.shape}, y.shape={y.shape}")
+            # print("[DEBUG] Before x.to(device)")
             x = x.to(device)
             y = y.to(device)
+
 
             if args.use_labels:
                 loss = diffusion(x, y)
@@ -74,10 +87,15 @@ def main():
 
             acc_train_loss += loss.item()
 
+            # print("[DEBUG] Before optimizer.zero_grad()")
             optimizer.zero_grad()
+            # print(f"[DEBUG] Loss computed: {loss.item()}")
+            # print("[DEBUG] Before loss.backward()")
             loss.backward()
+            # print("[DEBUG] Before optimizer.step()")
             optimizer.step()
 
+            # print(f"[ITER {iteration}] Loss: {loss.item()}")
             diffusion.update_ema()
             
             if iteration % args.log_rate == 0:
